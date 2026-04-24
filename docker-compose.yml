@@ -1,0 +1,24 @@
+services:
+  web:
+    container_name: yt-player
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yt-next-player:prod
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+
+  https:
+    container_name: yt-player-https
+    image: nginx:1.27-alpine
+    depends_on:
+      - web
+    ports:
+      # Keep the same host port (3030), but serve HTTPS now.
+      - "3030:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./localhost.crt:/etc/nginx/certs/localhost.crt:ro
+      - ./localhost.key:/etc/nginx/certs/localhost.key:ro
